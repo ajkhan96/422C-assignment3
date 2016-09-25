@@ -37,12 +37,15 @@ public class Main {
 		initialize();
 		
 		// TODO methods to read in words, output ladder
+		getWordLadderDFS("ADDED", "_______");
+		kb.close();
 	}
 	
 	public static void initialize() {
 		// initialize your static variables or constants here.
 		// We will call this method before running our JUNIT tests.  So call it 
 		// only once at the start of main.
+		
 	}
 	
 	/**
@@ -52,7 +55,14 @@ public class Main {
 	 */
 	public static ArrayList<String> parse(Scanner keyboard) {
 		// TO DO
-		return null;
+		String start = keyboard.next();
+		if(start.equals("/quit"))
+			return new ArrayList<String>(0);
+		String end = keyboard.next();
+		ArrayList<String> toReturn = new ArrayList<String>(2);
+		toReturn.set(0, start);
+		toReturn.set(1, end);
+		return toReturn;
 	}
 	
 	public static ArrayList<String> getWordLadderDFS(String start, String end) {
@@ -62,7 +72,14 @@ public class Main {
 		// TODO some code
 		Set<String> dict = makeDictionary();
 		// TODO more code
-		
+		HashMap<String, Boolean> searched = new HashMap<String, Boolean>();
+		Iterator<String> i = dict.iterator();
+		while(i.hasNext()){
+			searched.put(i.next(), false);
+		}
+		System.out.println("MONEY: " + searched.get("MONEY"));
+		searched.put("MONEY", true);
+		System.out.println("MONEY: " + searched.get("MONEY"));
 		return null; // replace this line later with real return
 	}
 	
