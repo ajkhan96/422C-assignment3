@@ -37,10 +37,9 @@ public class Main {
 		}
 		initialize();
 
-		ArrayList<String> ret = getWordLadderDFS("MONEY", "BUNNY");
+		ArrayList<String> ret = getWordLadderDFS("ALBAS", "ZYMES");
 		System.out.println(ret.toString());
-		//TODO crunch that ladder down
-
+		
 		// TODO methods to read in words, output ladder
 		kb.close();
 	}
@@ -128,16 +127,16 @@ public class Main {
 		if (start.equalsIgnoreCase(end)) {
 			return start;
 		} else {
-			String wordNext = findLadderNext(searched, dict, start);
+			String wordNext = findLadderNext(searched, dict, start, end);
 			while (!wordNext.equals("NF")) {
 				String result = dfsRecur(dict, searched, wordNext, end);
 				if (result != "Dead End") {
 					return (start + "\n" + result);
 				} else {
-					wordNext = findLadderNext(searched, dict, start);
+					wordNext = findLadderNext(searched, dict, start, end);
 				}
 			}
-				return "Dead End";
+			return "Dead End";
 		}
 	}
 
@@ -149,26 +148,43 @@ public class Main {
 	 *            HashMap describing which words have been searched already
 	 * @param dict
 	 *            Set of words
-	 * @param word
+	 * @param startWord
 	 *            Base word to find next of
 	 * @return "NF" if next candidate is not found, next word if found
 	 */
-	private static String findLadderNext(HashMap searched, Set<String> dict, String word) {
+	private static String findLadderNext(HashMap searched, Set<String> dict, String startWord, String endWord) {
 		Iterator<String> i = dict.iterator();
+		String closest = startWord;
 		while (i.hasNext()) {
 			String next = i.next();
 			if (!(boolean) searched.get(next)) {
 				int sum = 0;
-				for (int j = 0; j < word.length(); j++) {
-					if (next.charAt(j) != word.charAt(j)) {
+				for (int j = 0; j < startWord.length(); j++) {
+					if (next.charAt(j) != startWord.charAt(j)) {
 						sum += 1;
 					}
 				}
 				if (sum == 1) {
-					return next;
+					int closeDifferences = 0;
+					int nextDifferences = 0;
+					for (int j = 0; j < endWord.length(); j++) {
+						if (closest.charAt(j) != endWord.charAt(j)) {
+							closeDifferences += 1;
+						}
+						if (next.charAt(j) != endWord.charAt(j)) {
+							nextDifferences += 1;
+						}
+					}
+					if (closest.equals(startWord) || nextDifferences < closeDifferences) {
+						closest = next;
+					}
 				}
 			}
 		}
-		return "NF";
+		if (closest.equals(startWord)) {
+			return "NF";
+		} else {
+			return closest;
+		}
 	}
 }
