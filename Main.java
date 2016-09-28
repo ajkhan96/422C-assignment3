@@ -38,7 +38,7 @@ public class Main {
 		}
 		initialize();
 
-		ArrayList<String> ret = getWordLadderBFS("BUNNY", "MONEY");
+		ArrayList<String> ret = getWordLadderBFS("ALBAS", "ZYMES");
 		System.out.println(ret.toString());
 		
 		// TODO methods to read in words, output ladder
@@ -103,29 +103,50 @@ public class Main {
 			searched.put(i.next(), false);
 		}
 		List<List<String>> tree = new ArrayList<List<String>>();
-		
+		ArrayList<String> firstWord = new ArrayList<String>();
+		firstWord.add(currentWord);
+		tree.add(firstWord);
 		while(notFinished) {
-			ArrayList<String> row = findNextList(dict,searched,currentWord);
-			tree.add(row);
-			for(int j = 1; j < row.size(); j++) {
-				if((row.get(j)).equalsIgnoreCase(end)) {
-					notFinished = false;
-					finalIndex = j;
+			
+			for(int k = 0; k < tree.size(); k++) {
+				ArrayList<String> row = findNextList(dict,searched,tree.get(k).get(0));
+				System.out.println(row.toString());
+				tree.set(k, row);
+				for(int j = 1; j < row.size(); j++) {
+					if((row.get(j)).equalsIgnoreCase(end)) {
+						System.out.println("Found matching StringList: " + row.toString());
+						notFinished = false;
+						finalIndex = j;
+					}
 				}
-				
-			}	
+				if(!notFinished) {
+					break;
+				}
+				for(int l = 1; l < row.size(); l++) {
+					ArrayList<String> firstWordInRow = new ArrayList<String>();
+					firstWordInRow.add(row.get(l));
+					tree.add(firstWordInRow);
+				}
+				//System.out.println(row.toString());	
+			}
+			
+			if(notFinished) {
+				//TODO Whatever happens if no word list is found
+				return null;
+			}
+			
+			
 		}
+		//ArrayList<String> finalArray = new ArrayList<String>();
+		//finalArray.add(start);
+		//for(int j = 0; j < r)
 		return readTree(tree, start, end);
 	}
 		
 	
 	private static ArrayList<String> readTree(List<List<String>> tree, String start, String end) {
 		ArrayList<String> wordLadder = new ArrayList<String>();
-
-		wordLadder.add(end);
-		String endString =  tree.get(tree.size()-1).get(0);
-		tree.remove(tree.size()-1);
-		
+		String endString = end;
 		while(endString != start) {
 			if(tree.get(tree.size()-1).contains(endString)) {
 				wordLadder.add(endString);
@@ -136,7 +157,8 @@ public class Main {
 				tree.remove(tree.size()-1);
 			}	
 		}
-		
+		wordLadder.add(start);
+		Collections.reverse(wordLadder);
 		return wordLadder;
 	}
 	private static ArrayList<String> findNextList(Set<String> dict,
@@ -161,7 +183,7 @@ public class Main {
 			}
 
 		}
-		return row; // replace this line later with real return
+		return row; 
 	}
 
 	public static Set<String> makeDictionary() {
