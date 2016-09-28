@@ -1,14 +1,14 @@
 /* WORD LADDER Main.java
  * EE422C Project 3 submission by
  * Replace <...> with your actual data.
- * <Student1 Name>
- * <Student1 EID>
- * <Student1 5-digit Unique No.>
- * <Student2 Name>
- * <Student2 EID>
- * <Student2 5-digit Unique No.>
+ * Joshua Rothfus
+ * jjr3263
+ * 16445
+ * Ahsan Khan
+ * ajk2723
+ * 16445
  * Slip days used: <0>
- * Git URL:
+ * Git URL: https://github.com/ajkhan96/422C-assignment3
  * Fall 2016
  */
 
@@ -38,8 +38,11 @@ public class Main {
 		}
 		initialize();
 
-		ArrayList<String> ret = getWordLadderBFS("ALBAS", "ZYMES");
-		System.out.println(ret.toString());
+		ArrayList<String> ret = getWordLadderBFS("MONEY", "bunny");
+		printLadder(ret);
+		
+		ArrayList<String> ret2 = getWordLadderDFS("MONEY", "bunny");
+		printLadder(ret2);
 		
 		// TODO methods to read in words, output ladder
 		kb.close();
@@ -70,33 +73,71 @@ public class Main {
 		return toReturn;
 	}
 
+	/**
+	 * This is the main method for finding the Word Ladder using DFS.
+	 * This method start by making a dictionary of the words we will be searching for.
+	 * That dictionary is used to make a HashMap that will keep track of words we already used.
+	 * Using these tool we enter a recursion loop that searches all the way through branches
+	 * until it finds a match. When a match is found the recursion loop ends and returns an
+	 * ArrayList.
+	 * 
+	 * @param start
+	 * 			The start word for the word ladder
+	 * @param end
+	 * 			The end word for the word ladder
+	 * @return
+	 * 			Returns the ArrayList of the completed word ladder including both the start and end.
+	 */
+	
 	public static ArrayList<String> getWordLadderDFS(String start, String end) {
-
+		start = start.toUpperCase();
+		end = end.toUpperCase();
 		// Returned list should be ordered start to end. Include start and end.
 		// Return empty list if no ladder.
-		// TODO some code
 		Set<String> dict = makeDictionary();
-		// TODO more code
 		HashMap<String, Boolean> searched = new HashMap<String, Boolean>();
 		Iterator<String> i = dict.iterator();
 		while (i.hasNext()) {
 			searched.put(i.next(), false);
 		}
+		
+		
 
 		String result = dfsRecur(dict, searched, start, end);
-		result.toLowerCase();
+		if(result.equalsIgnoreCase("dead end")) {
+			ArrayList<String> toReturn = new ArrayList<String>();
+			//toReturn.add(start);
+			//toReturn.add(end);
+			return toReturn;
+		}
+		result = result.toLowerCase();
 		String[] resultArray = result.split("\n");
 		ArrayList<String> toReturn = new ArrayList<String>(Arrays.asList(resultArray));
 
 		return toReturn; // replace this line later with real return
 	}
 
+	/**
+	 * 
+	 * This is our main method. It creates our HashMap for preventing reuse of words and our master tree for storing data.
+	 * The main loop of the program adds a new branch to our master tree, checks it for matches, and then breaks the loop if
+	 * a match is found or moves on to adding more rows and checking for matches. Finally, once the match has been found 
+	 * the method calls readTree() to read the master tree of data and print out the word list.
+	 * 
+	 * @param start
+	 * 			This is our start word for the word ladder.
+	 * @param end
+	 * 			This is our end word for the word ladder.
+	 * @return
+	 * 			Returns the word ladder between start and end.
+	 */
+	
 	public static ArrayList<String> getWordLadderBFS(String start, String end) {
+		start = start.toUpperCase();
+		end = end.toUpperCase();
 		boolean notFinished = true;
 		String currentWord = start;
-		int finalIndex = 1;
 		Set<String> dict = makeDictionary();
-		// TODO some code
 		HashMap<String, Boolean> searched = new HashMap<String, Boolean>();
 		Iterator<String> i = dict.iterator();
 		while (i.hasNext()) {
@@ -110,13 +151,10 @@ public class Main {
 			
 			for(int k = 0; k < tree.size(); k++) {
 				ArrayList<String> row = findNextList(dict,searched,tree.get(k).get(0));
-				System.out.println(row.toString());
 				tree.set(k, row);
 				for(int j = 1; j < row.size(); j++) {
 					if((row.get(j)).equalsIgnoreCase(end)) {
-						System.out.println("Found matching StringList: " + row.toString());
 						notFinished = false;
-						finalIndex = j;
 					}
 				}
 				if(!notFinished) {
@@ -126,23 +164,39 @@ public class Main {
 					ArrayList<String> firstWordInRow = new ArrayList<String>();
 					firstWordInRow.add(row.get(l));
 					tree.add(firstWordInRow);
-				}
-				//System.out.println(row.toString());	
+				}	
 			}
 			
 			if(notFinished) {
-				//TODO Whatever happens if no word list is found
-				return null;
+				ArrayList<String> wordLadder = new ArrayList<String>();
+				//wordLadder.add(start);
+				//wordLadder.add(end);
+				return wordLadder;
 			}
 			
 			
 		}
-		//ArrayList<String> finalArray = new ArrayList<String>();
-		//finalArray.add(start);
-		//for(int j = 0; j < r)
-		return readTree(tree, start, end);
+		ArrayList<String> wordLadder = readTree(tree, start, end);
+		for (int j = 0; j < wordLadder.size(); j++) {
+			wordLadder.set(j,wordLadder.get(j).toLowerCase());
+		}
+		return wordLadder;
 	}
+
 		
+	/**
+	 * This is the "read" method for our massive tree of data which is now complete.
+	 * It reads through the tree finding all the branches that connect start to end.
+	 * 
+	 * @param tree
+	 * 			This is our master tree that stores all our data of words and their branches
+	 * @param start
+	 * 			This is our start word for the word ladder.
+	 * @param end
+	 * 			This is our end word for the word ladder.
+	 * @return
+	 * 			This method returns an ArrayList containing the word ladder from start to end.
+	 */
 	
 	private static ArrayList<String> readTree(List<List<String>> tree, String start, String end) {
 		ArrayList<String> wordLadder = new ArrayList<String>();
@@ -161,6 +215,22 @@ public class Main {
 		Collections.reverse(wordLadder);
 		return wordLadder;
 	}
+	
+	/**
+	 * findNextList returns an ArrayList of Strings where index zero is the
+	 * word to be matched and all the words after it are words that differ by a single letter.
+	 * NOTE: All matches take into account words that have already been listed as matches.
+	 * 
+	 * @param dict
+	 * 			The dictionary of words to be searched from.
+	 * @param searched
+	 * 			The HashMap of words we've already used.
+	 * @param matchWord
+	 * 			The word we are trying to find matches for
+	 * @return
+	 * 			Returning an ArrayList of all the words that match matchWord + matchWord itself at index 0;
+	 */
+	
 	private static ArrayList<String> findNextList(Set<String> dict,
 			HashMap<String, Boolean> searched, String matchWord) {
 
@@ -203,7 +273,28 @@ public class Main {
 	}
 
 	public static void printLadder(ArrayList<String> ladder) {
-
+		int sum = 0;
+		for (int j = 0; j < ladder.get(0).length(); j++) {
+			if (ladder.get(1).charAt(j) != ladder.get(0).charAt(j)) {
+				sum += 1;
+			}
+		}
+		if(sum == 1) {
+			System.out.println("a " + (ladder.size()-2) + "-rung word ladder exists between " + ladder.get(0) + " and " + ladder.get(ladder.size()-1));
+			for (int i = 0; i < ladder.size(); i++) {
+				System.out.println(ladder.get(i));
+			}
+		}
+		else if(ladder.size() == 0) {
+			System.out.println("no word ladder can be found between " + ladder.get(0) + " and " + ladder.get(ladder.size()-1));
+		}
+		else {
+			System.out.println("a " + (ladder.size()-2) + "-rung word ladder exists between " + ladder.get(0) + " and " + ladder.get(ladder.size()-1));
+			for (int i = 0; i < ladder.size(); i++) {
+				System.out.println(ladder.get(i));
+			}
+		}
+		
 	}
 
 	// TODO
