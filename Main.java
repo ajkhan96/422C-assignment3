@@ -16,6 +16,7 @@ package assignment3;
 
 import java.util.*;
 import java.io.*;
+import java.lang.reflect.Array;
 
 public class Main {
 
@@ -37,7 +38,7 @@ public class Main {
 		}
 		initialize();
 
-		ArrayList<String> ret = getWordLadderDFS("ALBAS", "ZYMES");
+		ArrayList<String> ret = getWordLadderBFS("BUNNY", "MONEY");
 		System.out.println(ret.toString());
 		
 		// TODO methods to read in words, output ladder
@@ -91,12 +92,76 @@ public class Main {
 	}
 
 	public static ArrayList<String> getWordLadderBFS(String start, String end) {
-
-		// TODO some code
+		boolean notFinished = true;
+		String currentWord = start;
+		int finalIndex = 1;
 		Set<String> dict = makeDictionary();
-		// TODO more code
+		// TODO some code
+		HashMap<String, Boolean> searched = new HashMap<String, Boolean>();
+		Iterator<String> i = dict.iterator();
+		while (i.hasNext()) {
+			searched.put(i.next(), false);
+		}
+		List<List<String>> tree = new ArrayList<List<String>>();
+		
+		while(notFinished) {
+			ArrayList<String> row = findNextList(dict,searched,currentWord);
+			tree.add(row);
+			for(int j = 1; j < row.size(); j++) {
+				if((row.get(j)).equalsIgnoreCase(end)) {
+					notFinished = false;
+					finalIndex = j;
+				}
+				
+			}	
+		}
+		return readTree(tree, start, end);
+	}
+		
+	
+	private static ArrayList<String> readTree(List<List<String>> tree, String start, String end) {
+		ArrayList<String> wordLadder = new ArrayList<String>();
 
-		return null; // replace this line later with real return
+		wordLadder.add(end);
+		String endString =  tree.get(tree.size()-1).get(0);
+		tree.remove(tree.size()-1);
+		
+		while(endString != start) {
+			if(tree.get(tree.size()-1).contains(endString)) {
+				wordLadder.add(endString);
+				endString = tree.get(tree.size()-1).get(0);
+				tree.remove(tree.size()-1);
+			}
+			else {
+				tree.remove(tree.size()-1);
+			}	
+		}
+		
+		return wordLadder;
+	}
+	private static ArrayList<String> findNextList(Set<String> dict,
+			HashMap<String, Boolean> searched, String matchWord) {
+
+		ArrayList<String> row = new ArrayList<String>();
+		row.add(matchWord);
+		Iterator<String> i = dict.iterator();
+		while (i.hasNext()) {
+			String next = i.next();
+			if (!(boolean) searched.get(next)) {
+				int sum = 0;
+				for (int j = 0; j < matchWord.length(); j++) {
+					if (next.charAt(j) != matchWord.charAt(j)) {
+						sum += 1;
+					}
+				}
+				if (sum == 1) {
+					row.add(next);
+					searched.put(next, true);
+				}
+			}
+
+		}
+		return row; // replace this line later with real return
 	}
 
 	public static Set<String> makeDictionary() {
