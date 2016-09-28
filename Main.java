@@ -37,15 +37,8 @@ public class Main {
 			ps = System.out; // default to Stdout
 		}
 		initialize();
-
-		ArrayList<String> ret = getWordLadderBFS("MONEY", "bunny");
-		printLadder(ret);
-		
-		ArrayList<String> ret2 = getWordLadderDFS("MONEY", "bunny");
-		printLadder(ret2);
 		
 		// TODO methods to read in words, output ladder
-		kb.close();
 	}
 
 	public static void initialize() {
